@@ -55,14 +55,14 @@ public class  ActionManager extends Object {
 	//	Add an action to the list of all actions.
 	//	Returns the Action passed to it, to save lines in calling code.
 	public CustomAction add(CustomAction action){
-		Debug.assert(iAllActions.add(action));
+		Debug.assertOnError(iAllActions.add(action));
 		return action;
 	}
 	
 	
 	//	Remove an action from the list of all actions.
 	public void remove(CustomAction action){
-		Debug.assert(iAllActions.remove(action));
+		Debug.assertOnError(iAllActions.remove(action));
 	}
 	
 	

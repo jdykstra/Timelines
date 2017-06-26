@@ -78,7 +78,7 @@ public class Debug {
 	}
 
 
-	public final static void assert(boolean b) {
+	public final static void assertOnError(boolean b) {
 		if (!b){
 			log(UNUSUAL_EVENT, "Assertion failed");
 			throw new Error("Assertion failed");
@@ -86,7 +86,7 @@ public class Debug {
 	}
 
 
-	public final static void assert(boolean b, String msg) {
+	public final static void assertOnError(boolean b, String msg) {
 		if (!b){
 			log(UNUSUAL_EVENT, "Assertion failed:  " + msg);
 			throw new Error(msg);

@@ -25,7 +25,7 @@ public abstract class Application extends Object {
 	//	Constants.
 	//	Path within JAR file of icon images.  When built with the CodeWarrior IDE, this is the path from
 	//	the project to the directory holding the GIF files.
-	public static final String ICON_PATH = "Icons/";
+	public static final String ICON_PATH = "/Icons/";
 
 
 	//	Global variables.

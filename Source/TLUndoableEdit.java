@@ -55,7 +55,7 @@ public abstract class TLUndoableEdit extends AbstractUndoableEdit {
 	public Set getAffectedStates()		{		return iAffectedStates;			}
 	
 	public TLState getAffectedState(){
-		Debug.assert(iAffectedStates.size() == 1);
+		Debug.assertOnError(iAffectedStates.size() == 1);
 		return (TLState)iAffectedStates.iterator().next();
 	}
 }

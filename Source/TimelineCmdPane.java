@@ -17,7 +17,7 @@ public class TimelineCmdPane extends TimelinePane {
 
 	//	Constructor---------------------------------------------------------------------
 	public TimelineCmdPane(TLDocument itsDoc, TimePositionMapping tpm){
-		super(itsDoc, tpm);
+		super(itsDoc, itsDoc.iWindow, tpm);
 		
 		iSelection = new Selection(this);
 		enableEvents(AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK);

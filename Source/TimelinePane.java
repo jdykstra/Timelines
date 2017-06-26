@@ -151,7 +151,7 @@ public class TimelinePane extends JComponent implements ChangeListener {
 	 	Iterator iter = dataObjectCollection.iterator();
 	 	while (iter.hasNext()){
 	 		DisplayedState dObj = getDisplayedStateFromState((TLState)iter.next());
-	 		Debug.assert(iDisplayMap.remove(dObj) != null);
+	 		Debug.assertOnError(iDisplayMap.remove(dObj) != null);
 	 	}
 	 }
 	 
@@ -170,7 +170,7 @@ public class TimelinePane extends JComponent implements ChangeListener {
 	 		if (entry.getValue().equals(state))
 	 			return (DisplayedState) entry.getKey();
 	 	}
-	 	Debug.assert(false);					//	Could not find display object
+	 	Debug.assertOnError(false);					//	Could not find display object
 	 	return null;
 	 }
 	

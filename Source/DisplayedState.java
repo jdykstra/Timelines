@@ -236,7 +236,7 @@ public class DisplayedState extends DisplayedObject {
 	//	Returns the overall horizontal dimension of this state.
 	public int getWidth(){
 		if (Debug.sCurLevel > 0){
-			Debug.assert(iDimensionsCalculated);
+			Debug.assertOnError(iDimensionsCalculated);
 		}
 		return iTotalWidth;
 	}
@@ -245,7 +245,7 @@ public class DisplayedState extends DisplayedObject {
 	//	Returns the overall vertical dimension of this state.
 	public int getHeight(){
 		if (Debug.sCurLevel > 0)
-			Debug.assert(iDimensionsCalculated);
+			Debug.assertOnError(iDimensionsCalculated);
 		return BODY_HEIGHT;
 	}
 
@@ -400,7 +400,7 @@ public class DisplayedState extends DisplayedObject {
 	 public int inBodyPart(int x, int y){
 	 
 		if (Debug.sCurLevel > 0){
-			Debug.assert(iDimensionsCalculated);
+			Debug.assertOnError(iDimensionsCalculated);
 		}
 
 	 	//	Check for hits within each of the object's handles.

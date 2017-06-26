@@ -137,7 +137,7 @@ public class TimePositionMapping extends Object {
 	
 		//	A mapped period must be determined before this method can function.
 		//	Verify that this has been done.
-		Debug.assert(iMappedPeriod != null);
+		Debug.assertOnError(iMappedPeriod != null);
 		
 		//	Determine the typical number of milliseconds occupied by one scale unit.
 		computeMilliToPixel();
@@ -224,7 +224,7 @@ public class TimePositionMapping extends Object {
 		if (!iCyclicView){
 			value = (millis - iOriginMillis)/iMilliToPixelRatio;
 			if (Debug.sCurLevel > 0)
-				Debug.assert((value > 0) && (value < Integer.MAX_VALUE));
+				Debug.assertOnError((value > 0) && (value < Integer.MAX_VALUE));
 		}
 		else {
 			//	Search through boundary array, until we find the start of the year containing this time.
@@ -233,7 +233,7 @@ public class TimePositionMapping extends Object {
 			for (i = 0;  i <  iCyclicBoundaries.length - 1; i++){
 				if (iCyclicBoundaries[i] <= millis && millis < iCyclicBoundaries[i+1])
 					break;
-				Debug.assert( i < iCyclicBoundaries.length - 1);
+				Debug.assertOnError( i < iCyclicBoundaries.length - 1);
 			}
 			long millisSinceStartOfYear = millis - iCyclicBoundaries[i];
 			

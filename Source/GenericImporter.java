@@ -36,7 +36,7 @@ class GenericImporter extends Object implements Importer {
 
 
 	// 	Constructor  --------------------------------------------------------------------
-	public CommonKnowledgeImporter(){
+	public GenericImporter(){
 		//	Nothing needed.
 	}
 	

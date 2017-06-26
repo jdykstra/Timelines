@@ -537,7 +537,7 @@ class TLWindow extends JFrame  implements ChangeListener {
 	//	can only be called once this window is visible on the screen.
 	//	??	This dependency is inelegant and problem-prone.  Is there any alternative?
 	private void ensureScrollbarModelUpToDate(){
-		Debug.assert(isShowing());
+		Debug.assertOnError(isShowing());
 		if (!isValid())
 			validate();
 	}
@@ -964,7 +964,7 @@ class TLWindow extends JFrame  implements ChangeListener {
 					cat = (Category)iter.next();
 					if (name.equals(cat.getLabelInfo().getLabel()))
 						break;
-					Debug.assert(iter.hasNext());
+					Debug.assertOnError(iter.hasNext());
 				}
 				JCheckBoxMenuItem mi = (JCheckBoxMenuItem)e.getSource();
 				if (mi.isSelected())

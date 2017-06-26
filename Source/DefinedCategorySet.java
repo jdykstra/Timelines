@@ -42,7 +42,7 @@ public class DefinedCategorySet extends HashSet implements Serializable {
 		iIndexedCategories = new ArrayList();
 		
 		//	Read byte stream version number.
-		Debug.assert(is.readShort() == 1);  //	Verify version
+		Debug.assertOnError(is.readShort() == 1);  //	Verify version
 		int categoryCount = is.readInt();
 		
 		//	The Mac version of Timelines had the concept of a "default category" that contained
@@ -155,7 +155,7 @@ public class DefinedCategorySet extends HashSet implements Serializable {
 			if (((1 << i) & bitmap) != 0){
 				Category cat = (Category)iIndexedCategories.get(i);
 				if (cat != null)
-					Debug.assert( tempValue.add(cat));
+					Debug.assertOnError( tempValue.add(cat));
 			}
 		}
 		return getSharedMemberSet(tempValue);
@@ -212,7 +212,7 @@ public class DefinedCategorySet extends HashSet implements Serializable {
 			while (iter.hasNext()){
 				Category cat = (Category) iter.next();
 				int memberIndex = iIndexedCategories.indexOf(cat);
-				Debug.assert(memberIndex >= 0);
+				Debug.assertOnError(memberIndex >= 0);
 				os.writeInt(memberIndex);
 			}
 		}
