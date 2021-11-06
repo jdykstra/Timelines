@@ -290,6 +290,9 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 					//	Update the progress window.
 					pw.updateValue( 67 + (33  *  i) / listSize);
 				}
+				
+				verifyDataConsistency();
+				
 				pw.updateValue(100);
 				
 				break;
@@ -990,6 +993,7 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 	//	Run consistency checks on the document's data, to catch data-corrupting bugs.
 	public void verifyDataConsistency(){
 		checkForDuplicateStates();
+		checkForNegativeDurations();
 	}
 	
 	
@@ -1016,9 +1020,35 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 			stateM = stateN;
 		}
 	}
+
+
+	//	Inspect the document data for events or states that have negative duration.
+	//  ??  This is a bit redundant with the sanity checking done by the TLEvent
+	//  ??  constructor and TLState.checkSanity();
+	protected void checkForNegativeDurations(){
+		if (iStatesByStart.isEmpty())
+			return;
+
+		//	Iterate through all states.
+		Iterator iter = iStatesByStart.iterator();
+		while (iter.hasNext()){
+			TLState state = (TLState)iter.next();
+			TLEvent beginning = state.getStartingEvent();
+			TLEvent ending = state.getEndingEvent();
+
+			boolean error = beginning.getPeriodEnd() < beginning.getPeriodStart() ||
+					ending.getPeriodEnd() < ending.getPeriodStart() ||
+					ending.getPeriodEnd() < beginning.getPeriodStart();
+
+			if (error){
+				String msg = "State \"" + state.getLabelInfo().getLabel() + "\" or one of its components has negative duration.";
+				System.err.println(msg);
+				JOptionPane.showMessageDialog(null,  msg,
+							"Probable data corruption", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
 }
-
-
 
 
 //	An exception to throw if we can't recognize the file format.
