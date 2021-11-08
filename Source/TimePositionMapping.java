@@ -16,6 +16,12 @@
 //	The document notifies us if its time range changes, by calling documentTimeRangeChanged().
 //	The window notifies us if its scale changes, by calling setScale().  In either case, we notify the timeline,
 //	grid and drag panes of the change through the callbacks they've registered via addChangeListener().
+//
+//  Cyclic view shows a single year, with each state positioned according to its distance from the first moment 
+//  of the year containing it.  Leap years are not handled specially.  A state that occurs after February 30 in a 
+//  leap year, displayed in a non-leap-year year, will be shifted one calendar day later than the date in the 
+//  state.  A state the occurs after February 30 in a non-leap-year year will be displayed in a leap-year year
+//  one calendar day earlier.
 
 import java.util.*;
 import javax.swing.event.*;
@@ -36,30 +42,29 @@ public class TimePositionMapping extends Object {
 	//	the typical number of milleseconds in the unit.  N.B. These are typical values;  some of the
 	//	units (such as month and year) have a varying size.
 	protected static final long[] APPROX_MILLISECONDS_IN_UNIT = {	
-		1000,							//	SECOND
-		60 * 1000,						//	MINUTE
-		60 * 60 * 1000,					//	HOUR
-		24 * 60 * 60 * 1000,				//	DAY
+		1000,									//	SECOND
+		60 * 1000,								//	MINUTE
+		60 * 60 * 1000,							//	HOUR
+		24 * 60 * 60 * 1000,					//	DAY
 		7 * 24 * 60 * 60 * 1000,				//	WEEK
-		31L * 24 * 60 * 60 * 1000,			//	MONTH
-		365L * 24 * 60 * 60 * 1000,			//	YEAR
+		31L * 24 * 60 * 60 * 1000,				//	MONTH
+		365L * 24 * 60 * 60 * 1000,				//	YEAR
 	};
 
 	//	Instance variables.
 	protected TLDocument iDoc;					//	Document containing our data
-	protected TLWindow iWindow;				//	Window we're contained in
+	protected TLWindow iWindow;					//	Window we're contained in
 	protected int iScale;						//	Current scale
 	protected TimePeriod iMappedPeriod;			//	Time period covered by mapping, or null
 	protected boolean iCyclicView;				//	Use cyclic form for view
-	protected long[] iCyclicBoundaries;			//	Start of each year enclosing mapped period, in millis
-	protected boolean [] iLeapYears;				//	For each entry in iCyclicBoundaries, is it a leap year?
+	protected long[] iCyclicYearStarts;			//	Start of each year enclosing mapped period, in millis
 
 	//	These two variables define the mapping from time (milliseconds) to horizontal position.
 	//	iOriginMillis is really a cache of iMappedPeriod.getPeriodStart();
 	//	The document notifies us, by calling updateTimePositionMapping(), whenever the
 	//	document's time range changes.
 	protected long iOriginMillis;				//	Moment represented by the origin
-	protected long iMilliToPixelRatio;				//	Ratio of millis to screen pixels
+	protected long iMilliToPixelRatio;			//	Ratio of millis to screen pixels
 
 	/**
 	* Only one ChangeEvent is needed per TPM since the
@@ -170,19 +175,17 @@ public class TimePositionMapping extends Object {
 			int arraySize = endingYear - startingYear + 1;
 			
 			//	Allocate the arrays.
-			iCyclicBoundaries = new long[arraySize];
-			iLeapYears = new boolean[arraySize];
+			iCyclicYearStarts = new long[arraySize];
 			
 			//	Fill in the array.
 			cal.clear();
 			cal.set(startingYear, 0, 1);
 			cal.truncateToLower(Calendar.YEAR);
 			for (int i = 0; i < arraySize; i++){
-				iCyclicBoundaries[i] = cal.getTimeInMillis();
-				iLeapYears[i] = cal.isLeapYear(cal.get(Calendar.YEAR));
+				iCyclicYearStarts[i] = cal.getTimeInMillis();
 				cal.roll(Calendar.YEAR, true);
 			}
-			iOriginMillis = iCyclicBoundaries[0];
+			iOriginMillis = iCyclicYearStarts[0];
 		}
 		else {
 			//	Compute the origin moment, as expressed in millis, as the lower bound of the
@@ -230,21 +233,15 @@ public class TimePositionMapping extends Object {
 			//	Search through boundary array, until we find the start of the year containing this time.
 			//	??	Could do a binary search and/or cache the last value found.
 			int i;
-			for (i = 0;  i <  iCyclicBoundaries.length - 1; i++){
-				if (iCyclicBoundaries[i] <= millis && millis < iCyclicBoundaries[i+1])
+			for (i = 0;  i <  iCyclicYearStarts.length - 1; i++){
+				if (iCyclicYearStarts[i] <= millis && millis < iCyclicYearStarts[i+1])
 					break;
-				Debug.assertOnError( i < iCyclicBoundaries.length - 1);
+				Debug.assertOnError( i < iCyclicYearStarts.length - 1);
 			}
-			long millisSinceStartOfYear = millis - iCyclicBoundaries[i];
-			
-			//	Adjust for leap years.  The cyclic view is always a leap year.  If the time we're converting
-			//	is not in a leap year, and it is after February 28, add in one day, so that, for example,
-			//	July 1 in the source year converts to July 1 in the target yet.
-			if (!iLeapYears[i] & millisSinceStartOfYear >= MILLIS_INCLUDING_FEBRUARY28)
-				millisSinceStartOfYear += APPROX_MILLISECONDS_IN_UNIT[TimeUnit.DAY];
+			long millisSinceStartOfYear = millis - iCyclicYearStarts[i];
 			
 			//	Compute the final X offset in pixels.
-			value = (millisSinceStartOfYear)/iMilliToPixelRatio;
+			value = millisSinceStartOfYear/iMilliToPixelRatio;
 		}
 		
 		return (int)value;
