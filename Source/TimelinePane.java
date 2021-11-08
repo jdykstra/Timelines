@@ -17,7 +17,7 @@ public class TimelinePane extends JComponent implements ChangeListener {
 
 	//	Instance variables----------------------------------------------------------------
 	protected TLDocument iDoc;					//	Document containing our data
-	protected TLWindow iWindow;				//	The window that we're a part of
+	protected TLWindow iWindow;					//	The window that we're a part of
 	protected TimePositionMapping iTPM;			//	Maps time to space on this pane
 	protected Placer iPlacer;					//	Arranges the contents of this pane
 	
@@ -61,20 +61,19 @@ public class TimelinePane extends JComponent implements ChangeListener {
     {
         private static Toolkit tk = null;
 
-	// Return the AWT system event queue.  JDK1.2 applications 
-	// and PlugIn enabled browsers allow direct access to the 
-	// applet specific system event queue.
-	//
-	static EventQueue get() {
-            if (tk == null) {
-	        tk = Toolkit.getDefaultToolkit();
-	    }
-	    return tk.getSystemEventQueue();
-	}
+		// Return the AWT system event queue.  JDK1.2 applications 
+		// and PlugIn enabled browsers allow direct access to the 
+		// applet specific system event queue.
+		static EventQueue get() {
+				if (tk == null) {
+				tk = Toolkit.getDefaultToolkit();
+			}
+			return tk.getSystemEventQueue();
+		}
 
-	static EventQueue get(JRootPane rootPane) {
-	    return rootPane.getToolkit().getSystemEventQueue();
-	}
+		static EventQueue get(JRootPane rootPane) {
+			return rootPane.getToolkit().getSystemEventQueue();
+		}
     }
 
 
@@ -106,8 +105,9 @@ public class TimelinePane extends JComponent implements ChangeListener {
 	 protected void drawDataObjects(Graphics g, Collection c){
 	 
 	 	//	Iterate through all objects, and draw each one.
-	        Rectangle clipRect = g.getClipBounds();	        
-	 	Iterator iter = c.iterator();	 	while (iter.hasNext()){
+	    Rectangle clipRect = g.getClipBounds();	        
+	 	Iterator iter = c.iterator();	 	
+		while (iter.hasNext()){
 	 		DisplayedState dObj = (DisplayedState)iter.next();
 	        		dObj.draw(g, clipRect);
 	 	}

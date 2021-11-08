@@ -296,7 +296,7 @@ public class TimePositionMapping extends Object {
 	}
 	
 	
-	    /**
+	 /**
      * Adds a ChangeListener.  The change listeners are run each
      * time any one of the Bounded Range model properties changes.
      *
@@ -336,8 +336,5 @@ public class TimePositionMapping extends Object {
                 ((ChangeListener)listeners[i+1]).stateChanged(iChangeEvent);
             }          
         }
-    }   
-
-    
-
+    } 
 }
