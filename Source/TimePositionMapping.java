@@ -224,11 +224,9 @@ public class TimePositionMapping extends Object {
 	//	(expressed in drawing coordinates).
 	public int timeToXPosition(long millis){
 		long value;
-		if (!iCyclicView){
+		if (!iCyclicView)
 			value = (millis - iOriginMillis)/iMilliToPixelRatio;
-			if (Debug.sCurLevel > 0)
-				Debug.assertOnError((value > 0) && (value < Integer.MAX_VALUE));
-		}
+
 		else {
 			//	Search through boundary array, until we find the start of the year containing this time.
 			//	??	Could do a binary search and/or cache the last value found.
