@@ -183,19 +183,20 @@ public class TimePositionMapping extends Object {
 			//	The first entry in the array is the start of the nearest leap year before the start of the 
 			//	mapped period;  the last entry in the array is the start of the year _after_ the
 			//	end of the mapped period.
+			TimePeriod docRange = iDoc.getDocTimePeriod();
 			CustomGregorianCalendar cal = new CustomGregorianCalendar();
 			
 			//	Find the years in which the mapped period starts and ends.
-			cal.setTimeInMillis(iMappedPeriod.getPeriodStart());
+			cal.setTimeInMillis(docRange.getPeriodStart());
 			cal.truncateToLower(Calendar.YEAR);
 			int startingYear = cal.get(Calendar.YEAR);
-			System.err.println("iMappedPeriod start: " + cal.toZonedDateTime().toString());////////////////////
+			System.err.println("docRange start: " + cal.toZonedDateTime().toString());////////////////////
 
 			cal.clear();
-			cal.setTimeInMillis(iMappedPeriod.getPeriodEnd());
+			cal.setTimeInMillis(docRange.getPeriodEnd());
 			cal.truncateToLower(Calendar.YEAR);
 			cal.roll(Calendar.YEAR, true);
-			System.err.println("iMappedPeriod end: " + cal.toZonedDateTime().toString());////////////////////
+			System.err.println("docRange end: " + cal.toZonedDateTime().toString());////////////////////
 			int endingYear = cal.get(Calendar.YEAR);
 			
 			//	Find the nearest year at or before the starting year of the mapped period
@@ -220,9 +221,11 @@ public class TimePositionMapping extends Object {
 			//  The origin of the window is one day before the first moment in the year specified by the user.
 			//  ??  The year is hardwired for testing.
 			cal.clear();
-			cal.set(2022, 10, 28);   ///////////////////////////
+			cal.set(2022, 0, 1);   ///////////////////////////
 			System.err.println("Origin date: " + cal.toZonedDateTime().toString());
 			iOriginMillis = cal.getTimeInMillis();
+			iMappedPeriod = new ConcreteTimePeriod(cal.getTimeInMillis(), 
+										cal.getTimeInMillis() + APPROX_MILLISECONDS_IN_UNIT[TimeUnit.YEAR]);
 		}
 		else {
 			//	Compute the origin moment, as expressed in millis, as the lower bound of the
@@ -247,8 +250,7 @@ public class TimePositionMapping extends Object {
 	public int getTimelineWidth(){
 		if (iMappedPeriod != null){
 			if (iCyclicView)
-				return timeDeltaToXDelta(APPROX_MILLISECONDS_IN_UNIT[TimeUnit.YEAR] +
-								APPROX_MILLISECONDS_IN_UNIT[TimeUnit.DAY]);
+				return timeDeltaToXDelta(APPROX_MILLISECONDS_IN_UNIT[TimeUnit.YEAR]);
 			else {
 				long endTime = iMappedPeriod.getPeriodEnd();
 				long endWithMargin = endTime + END_MARGIN * APPROX_MILLISECONDS_IN_UNIT[iScale];
@@ -266,7 +268,6 @@ public class TimePositionMapping extends Object {
 		long value;
 		if (!iCyclicView)
 			value = (millis - iOriginMillis)/iMilliToPixelRatio;
-
 		else {
 			//	Search through boundary array, until we find the start of the year containing this time.
 			//	??	Could do a binary search and/or cache the last value found.

@@ -13,8 +13,8 @@ class GridPane extends JComponent implements ChangeListener {
 	//	Constants determining pane layout.
 	static final protected int HEADER_HEIGHT = 20;					//	Height of header pane
 	static final protected int MAJOR_LEGEND_HEIGHT = 10;			//	Height of major legend in header
-	static final protected int MAJOR_LEGEND_SPACING = 10;  		//	Distance from grid to start of text
-	static final protected int MAJOR_LEGEND_Y_POSTION = 10;		//	Y coordinate of text baseline
+	static final protected int MAJOR_LEGEND_SPACING = 10;  			//	Distance from grid to start of text
+	static final protected int MAJOR_LEGEND_Y_POSTION = 10;			//	Y coordinate of text baseline
 	static final protected int MINOR_LEGEND_SPACING = 4;			//	Distance from grid to start of text
 	static final protected int MINOR_LEGEND_Y_POSITION = 18;		// 	Y coordinate of text baseline
 
@@ -29,8 +29,8 @@ class GridPane extends JComponent implements ChangeListener {
 	//	Constants determining pane colors.
 	//	??	BACKGROUND_COLOR temporarily public for DisplayedState.java.
 	static final public Color BACKGROUND_COLOR = new Color(220, 220, 220);	//	Color of the background
-	static final protected Color MINOR_GRID_COLOR = Color.cyan;		//	Color of the grid minor divisions
-	static final protected Color MAJOR_GRID_COLOR = DARK_CYAN;	//	Color of the grid major divisions
+	static final protected Color MINOR_GRID_COLOR = Color.cyan;				//	Color of the grid minor divisions
+	static final protected Color MAJOR_GRID_COLOR = DARK_CYAN;				//	Color of the grid major divisions
 	
 	//	Time/date formatters.
  	SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
@@ -155,54 +155,54 @@ class GridPane extends JComponent implements ChangeListener {
 	 		//	If we're doing header, draw appropriate legend.
 	 		//	??	We should be using java.text.NumberFormat to handle the leading zeros.
 		        if (iIsHeaderPane){
-		 		int legendValue;
-		 		String legendString = null;
-		 		switch (scale){
-					case TimeUnit.YEAR:
-						legendValue = curMoment.get(Calendar.YEAR);
-						legendString = Integer.toString(legendValue % 100);
-						if (legendString.length() == 1)
-							legendString = "0" + legendString;
-						break;
+					int legendValue;
+					String legendString = null;
+					switch (scale){
+						case TimeUnit.YEAR:
+							legendValue = curMoment.get(Calendar.YEAR);
+							legendString = Integer.toString(legendValue % 100);
+							if (legendString.length() == 1)
+								legendString = "0" + legendString;
+							break;
 
-					case TimeUnit.MONTH:
-						legendValue = curMoment.get(Calendar.MONTH);
-						legendString = MONTH_ABRIEVIATIONS[legendValue];
-						break;
+						case TimeUnit.MONTH:
+							legendValue = curMoment.get(Calendar.MONTH);
+							legendString = MONTH_ABRIEVIATIONS[legendValue];
+							break;
 
-					case  TimeUnit.WEEK:
-						legendString = Integer.toString(curMoment.get(Calendar.DATE));
-						if (legendString.length() == 1)
-							legendString = " " + legendString;
-						break;
+						case  TimeUnit.WEEK:
+							legendString = Integer.toString(curMoment.get(Calendar.DATE));
+							if (legendString.length() == 1)
+								legendString = " " + legendString;
+							break;
 
-					case TimeUnit.DAY:
-						legendValue = curMoment.get(Calendar.DAY_OF_MONTH);
-						legendString = Integer.toString(legendValue);
-						if (legendString.length() == 1)
-							legendString = " " + legendString;
-						break;
+						case TimeUnit.DAY:
+							legendValue = curMoment.get(Calendar.DAY_OF_MONTH);
+							legendString = Integer.toString(legendValue);
+							if (legendString.length() == 1)
+								legendString = " " + legendString;
+							break;
 
-					case TimeUnit.HOUR:
-						legendValue = curMoment.get(Calendar.HOUR);
-						legendString = Integer.toString(legendValue);
-						if (legendString.length() == 1)
-							legendString = "0" + legendString;
-						break;
+						case TimeUnit.HOUR:
+							legendValue = curMoment.get(Calendar.HOUR);
+							legendString = Integer.toString(legendValue);
+							if (legendString.length() == 1)
+								legendString = "0" + legendString;
+							break;
 
-					case TimeUnit.MINUTE:
-						legendValue = curMoment.get(Calendar.MINUTE);
-						legendString = Integer.toString(legendValue);
-						if (legendString.length() == 1)
-							legendString = "0" + legendString;
-						break;
+						case TimeUnit.MINUTE:
+							legendValue = curMoment.get(Calendar.MINUTE);
+							legendString = Integer.toString(legendValue);
+							if (legendString.length() == 1)
+								legendString = "0" + legendString;
+							break;
 
-					case TimeUnit.SECOND:
-						legendValue = curMoment.get(Calendar.SECOND);
-						legendString = Integer.toString(legendValue);
-						if (legendString.length() == 1)
-							legendString = "0" + legendString;
-						break;
+						case TimeUnit.SECOND:
+							legendValue = curMoment.get(Calendar.SECOND);
+							legendString = Integer.toString(legendValue);
+							if (legendString.length() == 1)
+								legendString = "0" + legendString;
+							break;
 			 	}
 			 	g.setColor(Color.black);
 			 	g.drawString(legendString, x + MINOR_LEGEND_SPACING, MINOR_LEGEND_Y_POSITION);
@@ -238,27 +238,27 @@ class GridPane extends JComponent implements ChangeListener {
 
 	 		//	If we're doing header, draw appropriate legend.
 		        if (iIsHeaderPane){
-		 		SimpleDateFormat format = null;
-		 		switch (nextLargerUnit){
-					case TimeUnit.YEAR:
-						format = yearFormat;
-						break;
-	
-					case TimeUnit.MONTH:
-					case TimeUnit.WEEK:
-						format = (isCyclicView) ? MONTH_FORMAT : monthYearFormat;
-						break;
-											
-					case TimeUnit.DAY:
-						format = (isCyclicView) ? MONTH_DAY_FORMAT : monthDayYearFormat;
-						break;
+					SimpleDateFormat format = null;
+					switch (nextLargerUnit){
+						case TimeUnit.YEAR:
+							format = yearFormat;
+							break;
+		
+						case TimeUnit.MONTH:
+						case TimeUnit.WEEK:
+							format = monthYearFormat;
+							break;
 												
-					case TimeUnit.HOUR:
-						break;
+						case TimeUnit.DAY:
+							format = monthDayYearFormat;
+							break;
+													
+						case TimeUnit.HOUR:
+							break;
 
-					case TimeUnit.MINUTE:
-					case TimeUnit.SECOND:
-						break;
+						case TimeUnit.MINUTE:
+						case TimeUnit.SECOND:
+							break;
 			 	}
 			 	if (format != null){
 				 	g.setColor(Color.black);
