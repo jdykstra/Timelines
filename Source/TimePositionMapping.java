@@ -194,7 +194,12 @@ public class TimePositionMapping extends Object {
 				iCyclicYearStarts[i] = cal.getTimeInMillis();
 				cal.roll(Calendar.YEAR, true);
 			}
-			iOriginMillis = iCyclicYearStarts[0];
+                      
+            //  The origin of the window is one day before the first moment in the year specified by the user.
+			//  ??  The year is hardwired for testing.
+           cal.clear();
+           cal.set(2022, 10, 28);   ///////////////////////////
+           iOriginMillis = cal.getTimeInMillis();
 		}
 		else {
 			//	Compute the origin moment, as expressed in millis, as the lower bound of the
