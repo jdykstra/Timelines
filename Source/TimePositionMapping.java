@@ -1,13 +1,15 @@
 //	TimePositionMapping.java - Represent the relationship between time and position on a timeline pane.
 
-//	There are two elements to the time/position mapping:  the scaling factor, and the mapping period.
-//	The scaling factor defines how many milleseconds map to each pixel, and the mapping period defines the
-//	range of times over which the mapping is valid.
+//  A TPM converts between time and pixel counts for a particular window, which is primarily
+//  a function of the window's scaling factor.  The scaling factor defines how many milleseconds 
+//	map to each pixel, and the mapping period defines the range of times over which the mapping is valid.
 //	(Technically, only the starting time of the mapping period is actually used (to define the graphics origin),
 //	but it is clearer to think about a period.)
-//	
-//	The mapping period computed as the document's time range, plus an optional "extra" range which is specified by the
-//	window through one of the ensureIncludedInMappedTimePeriod() methods.  Once an extra range is specified
+
+//  A TPM also keeps track of the amount of time in the 
+//  window in variable iMappedPeriod, which starts out as the document's contained period, but which 
+//  can be expanded with ensureIncludedInMappedTimePeriod() if the user scrolls or jumps past 
+//  either end of that period.  Once an extra range is specified
 //	in this way, it remains in effect until a different one is requested, or the document's time range changes.
 //	It is possible, although rare, for there not to be a mapping at all.  This occurs, for example, when a blank document
 //	(which doesn't have a time range) is created.  However, as soon as a window is created to display this document,
@@ -56,6 +58,9 @@ public class TimePositionMapping extends Object {
 	protected TLWindow iWindow;					//	Window we're contained in
 	protected int iScale;						//	Current scale
 	protected TimePeriod iMappedPeriod;			//	Time period covered by mapping, or null
+												//  This is usually the period contained in the document,
+												//  but can be extended at either end if the user scrolls
+												//  past an end of the document.  See ensureIncludedInMappedTimePeriod()
 	protected boolean iCyclicView;				//	Use cyclic form for view
 	protected long[] iCyclicYearStarts;			//	Start of each year enclosing mapped period, in millis
 
@@ -107,7 +112,10 @@ public class TimePositionMapping extends Object {
 	
 	
 	//	Ensure that the passed time period is included in the mapped time period.
-	public void ensureIncludedInMappedTimePeriod(TimePeriod tr){
+    //  ??  This gets called to ensure iMappedPeriod includes space beyond the
+   	//  ??  beginning or end of the document that's visible in the TimelinePane.
+   	//  ??  But it seems like this function is needlessly obtuse.
+		public void ensureIncludedInMappedTimePeriod(TimePeriod tr){
 		TimePeriod docRange = iDoc.getDocTimePeriod();
 		TimePeriod newMapRange;
 		if (docRange == null)
@@ -122,6 +130,7 @@ public class TimePositionMapping extends Object {
 	
 	
 	//	This calculates iMilliToPixelRatio, which is part of the time/position mapping.
+	//  ??  This could be pre-computed.
 	protected void computeMilliToPixel(){
 		//	Determine the typical number of milliseconds occupied by one scale unit.
 	
@@ -204,6 +213,9 @@ public class TimePositionMapping extends Object {
 	
 	
 	//	Return the width of the timeline, in pixels.  This width is zero if the mapped period is not defined.
+	//  Note that this may be extended past the actual period contained in this document, to show
+	//  time before or after the document period visible in the TimelinePane.  See ensureIncludedInMappedTimePeriod().
+	//  ??  This handling of time before or after the document period seems needlessly complex.
 	public int getTimelineWidth(){
 		if (iMappedPeriod != null){
 			if (iCyclicView)
