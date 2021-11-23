@@ -50,7 +50,7 @@ public class Debug {
 				}
 				catch (IOException e){
 					//	Ignore exceptions, leaving stream null.
-					System.err.println("Could not open debugging stream because " + 
+					Debug.log(Debug.DETAIL, "Could not open debugging stream because " + 
 													e.toString());
 				}
 			}

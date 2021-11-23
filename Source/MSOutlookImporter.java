@@ -64,19 +64,19 @@ class MSOutlookImporter extends Object implements Importer {
 			//	Parse the beginning datestamp.  If it can't be parsed, dump it to the log, and go to the next one.
 			long start = parseDate(fields[START_DATE_FIELD], fields[START_TIME_FIELD]);
 			if (start == UNKNOWN){
-				System.err.println("Start timestamp is unparseable:  " + fields[LABEL_FIELD]);
+				Debug.log(Debug.UNUSUAL_EVENT, "Start timestamp is unparseable:  " + fields[LABEL_FIELD]);
 				continue;
 			}
 			
 			//	Parse the ending datestamp.  If it can't be parsed, dump it to the log, and go on to the next one.
 			long end = parseDate(fields[END_DATE_FIELD], fields[END_TIME_FIELD]);
 			if (end == UNKNOWN ){
-				System.err.println("End timestamp is unparseable:  " + fields[LABEL_FIELD]);
+				Debug.log(Debug.UNUSUAL_EVENT, "End timestamp is unparseable:  " + fields[LABEL_FIELD]);
 				continue;
 			}
 			
 			if (end < start){
-				System.err.println("End is before start:  " + fields[LABEL_FIELD]);
+				Debug.log(Debug.UNUSUAL_EVENT, "End is before start:  " + fields[LABEL_FIELD]);
 				continue;
 			}
 			

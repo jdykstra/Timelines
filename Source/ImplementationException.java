@@ -19,7 +19,7 @@ public class ImplementationException extends RuntimeException {
 		pw.println("An unexpected exception was encountered:  " + e.toString());
 		e.printStackTrace(new PrintWriter(sw));
 		message = sw.toString();
-		System.err.println(message);
+		Debug.log(Debug.INTERNAL_FAILURES, message);
 	}
 	
 	

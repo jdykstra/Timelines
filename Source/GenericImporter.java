@@ -55,7 +55,7 @@ class GenericImporter extends Object implements Importer {
 			//	repeating event.  Dump it to the log, and go to the next one.
 			long start = parseDate(fields[START_FIELD]);
 			if (start == UNKNOWN){
-				System.err.println(fields);
+				Debug.log(Debug.UNUSUAL_EVENT, fields[START_FIELD]);
 				continue;
 			}
 			

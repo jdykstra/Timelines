@@ -233,7 +233,7 @@ public class Selection extends HashSet implements PropertyChangeListener {
 		//	The only property we're interested in is "enabled".
 		String propertyName = e.getPropertyName();
 		if (propertyName.equals("enabled")) {
-			System.err.println("propertyChange() called on " + toString());///////////
+			Debug.log(Debug.DETAIL, "propertyChange() called on " + toString());
 			final boolean isEnabled = ((Boolean) e.getNewValue()).booleanValue();
 			
 			//	Update the drag handles on the selected objects according to the new

@@ -83,7 +83,7 @@ public class  ActionManager extends Object {
 		
 		long runTime = System.currentTimeMillis() - startTime;
 		if (runTime > 10)
-			System.err.println("updateAllActionEnables() took " + runTime +
+			Debug.log(Debug.UNUSUAL_EVENT, "updateAllActionEnables() took " + runTime +
 							" milliseconds.");
 	}
 	

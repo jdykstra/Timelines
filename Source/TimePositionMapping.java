@@ -91,16 +91,14 @@ public class TimePositionMapping extends Object {
 		//	null if the document is empty.  
 		iMappedPeriod = iDoc.getDocTimePeriod();
 
-		//////////////////////////////////
 		if (iMappedPeriod != null){
 			CustomGregorianCalendar cal = new CustomGregorianCalendar();
 			cal.setTimeInMillis(iMappedPeriod.getPeriodStart());
-			System.err.println("Document start: " + cal.toZonedDateTime().toString());////////////////////
+			Debug.log(Debug.DETAIL, "Document start: " + cal.toZonedDateTime().toString());
 			cal.clear();
 			cal.setTimeInMillis(iMappedPeriod.getPeriodEnd());
-			System.err.println("Document end: " + cal.toZonedDateTime().toString());////////////////////
+			Debug.log(Debug.DETAIL, "Document end: " + cal.toZonedDateTime().toString());
 		}
-		////////////////////////////////////
 		
 		//	Compute the mapping between time and space.
 		computeMilliToPixel();
@@ -135,14 +133,12 @@ public class TimePositionMapping extends Object {
 			newMapRange = docRange.cover(tr);
 		if (!newMapRange.equals(iMappedPeriod)){
 			iMappedPeriod = newMapRange;
-			////////////////////////////////////
 			CustomGregorianCalendar cal = new CustomGregorianCalendar();
 			cal.setTimeInMillis(iMappedPeriod.getPeriodStart());
-			System.err.println("Document extended start: " + cal.toZonedDateTime().toString());////////////////////
+			Debug.log(Debug.DETAIL, "Document extended start: " + cal.toZonedDateTime().toString());
 			cal.clear();
 			cal.setTimeInMillis(iMappedPeriod.getPeriodEnd());
-			System.err.println("Document extended end: " + cal.toZonedDateTime().toString());////////////////////
-			/////////////////////////////////
+			Debug.log(Debug.DETAIL, "Document extended end: " + cal.toZonedDateTime().toString());
 
 			computeTimePositionMapping();
 		}
@@ -190,13 +186,13 @@ public class TimePositionMapping extends Object {
 			cal.setTimeInMillis(docRange.getPeriodStart());
 			cal.truncateToLower(Calendar.YEAR);
 			int startingYear = cal.get(Calendar.YEAR);
-			System.err.println("docRange start: " + cal.toZonedDateTime().toString());////////////////////
+			Debug.log(Debug.DETAIL, "docRange start: " + cal.toZonedDateTime().toString());
 
 			cal.clear();
 			cal.setTimeInMillis(docRange.getPeriodEnd());
 			cal.truncateToLower(Calendar.YEAR);
 			cal.roll(Calendar.YEAR, true);
-			System.err.println("docRange end: " + cal.toZonedDateTime().toString());////////////////////
+			Debug.log(Debug.DETAIL, "docRange end: " + cal.toZonedDateTime().toString());
 			int endingYear = cal.get(Calendar.YEAR);
 			
 			//	Find the nearest year at or before the starting year of the mapped period
@@ -222,7 +218,7 @@ public class TimePositionMapping extends Object {
 			//  ??  The year is hardwired for testing.
 			cal.clear();
 			cal.set(2022, 0, 1);   ///////////////////////////
-			System.err.println("Origin date: " + cal.toZonedDateTime().toString());
+			Debug.log(Debug.DETAIL, "Origin date: " + cal.toZonedDateTime().toString());
 			iOriginMillis = cal.getTimeInMillis();
 			iMappedPeriod = new ConcreteTimePeriod(cal.getTimeInMillis(), 
 										cal.getTimeInMillis() + APPROX_MILLISECONDS_IN_UNIT[TimeUnit.YEAR]);

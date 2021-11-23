@@ -202,7 +202,7 @@ public class TimelinePane extends JComponent implements ChangeListener {
 		//	??	Setting the maximum height every time is wasteful.
 		int paneHeight = iPlacer.getMaximumYUsed();
 		int paneWidth = iTPM.getTimelineWidth();
-		System.err.println("paneWidth:  " + paneWidth);
+		Debug.log(Debug.DETAIL, "EXTREME_DETAIL:  " + paneWidth);
 
 		this.setPreferredSize(new Dimension(paneWidth, paneHeight));
 		this.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));

@@ -157,8 +157,8 @@ public abstract class Application extends Object {
 	public static void reportUnexpectedException(Throwable e){
 		StringWriter sw = new StringWriter();
 		e.printStackTrace(new PrintWriter(sw));
-		System.err.println("Unexpected exception:");
-		System.err.println(sw);
+		Debug.log(Debug.INTERNAL_FAILURES, "Unexpected exception:");
+		Debug.log(Debug.INTERNAL_FAILURES, sw.toString());
 		JOptionPane.showMessageDialog(null,  sw.toString(),
                            "Unexpected internal error", JOptionPane.ERROR_MESSAGE);
     	}

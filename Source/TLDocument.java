@@ -168,14 +168,14 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 		long nowTime = System.currentTimeMillis();
 		long nowTotalMemory = Runtime.getRuntime().totalMemory();
 		long nowUsedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-		System.err.println("Open realtime = " +  (nowTime - startTime)/1000+
+		Debug.log(Debug.DETAIL, "Open realtime = " +  (nowTime - startTime)/1000+
 			" seconds.");
-		System.err.println("Memory increment = " + (nowUsedMemory - startUsedMemory)/
+		Debug.log(Debug.DETAIL, "Memory increment = " + (nowUsedMemory - startUsedMemory)/
 			1024 + " KB.");
 		if (nowTotalMemory != startTotalMemory){
-			System.err.println("Total memory started at " + startUsedMemory /
+			Debug.log(Debug.DETAIL, "Total memory started at " + startUsedMemory /
 					1024 + " KB.");
-			System.err.println("Total memory is now at " + nowTotalMemory /
+			Debug.log(Debug.DETAIL, "Total memory is now at " + nowTotalMemory /
 					1024 + " KB.");
 		}
 		return doc;
@@ -1013,7 +1013,7 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 			if (stateM.getLabelInfo().getLabel().equals(stateN.getLabelInfo().getLabel()) &&
 					stateM.equalsTimePeriod(stateN)){
 				String msg = "State \"" + stateM.getLabelInfo().getLabel() + "\" is duplicated";
-				System.err.println(msg);
+				Debug.log(Debug.INTERNAL_FAILURES, msg);
 				JOptionPane.showMessageDialog(null,  msg,
                            "Possible data corruption", JOptionPane.ERROR_MESSAGE);
             }
@@ -1042,7 +1042,7 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 
 			if (error){
 				String msg = "State \"" + state.getLabelInfo().getLabel() + "\" or one of its components has negative duration.";
-				System.err.println(msg);
+				Debug.log(Debug.INTERNAL_FAILURES, msg);
 				JOptionPane.showMessageDialog(null,  msg,
 							"Probable data corruption", JOptionPane.ERROR_MESSAGE);
 			}
