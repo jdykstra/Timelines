@@ -88,9 +88,7 @@ public class Timelines extends Application {
 
 		//	Output something to the console window during debugging, just so
 		//	that we know whether the primary task has actually exited.
-		if (DEBUG_MODE){
-			System.err.println("Primary task complete.");
-		}
+		Debug.log(Debug.DETAIL, "Primary task exited.");
 	}
 
 
@@ -122,10 +120,15 @@ public class Timelines extends Application {
 			else {
 				msg.append(e.toString());
 				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				msg.append(sw);
+				try {
+					PrintWriter pw = new PrintWriter(sw.toString());
+					e.printStackTrace(pw);
+					msg.append(sw);
+				} catch (FileNotFoundException e2){
+					Debug.log(Debug.INTERNAL_FAILURES, "Exception while handling exception:  " + e2.toString());
+				}
 			}
-			System.err.println(msg);
+			Debug.log(Debug.INTERNAL_FAILURES, msg.toString());
 			JOptionPane.showMessageDialog(null, msg, "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
