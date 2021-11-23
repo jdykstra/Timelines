@@ -91,6 +91,17 @@ public class TimePositionMapping extends Object {
 		//	null if the document is empty.  
 		iMappedPeriod = iDoc.getDocTimePeriod();
 
+		//////////////////////////////////
+		if (iMappedPeriod != null){
+			CustomGregorianCalendar cal = new CustomGregorianCalendar();
+			cal.setTimeInMillis(iMappedPeriod.getPeriodStart());
+			System.err.println("Document start: " + cal.toZonedDateTime().toString());////////////////////
+			cal.clear();
+			cal.setTimeInMillis(iMappedPeriod.getPeriodEnd());
+			System.err.println("Document end: " + cal.toZonedDateTime().toString());////////////////////
+		}
+		////////////////////////////////////
+		
 		//	Compute the mapping between time and space.
 		computeMilliToPixel();
 		if (iMappedPeriod != null)
@@ -115,7 +126,7 @@ public class TimePositionMapping extends Object {
     //  ??  This gets called to ensure iMappedPeriod includes space beyond the
    	//  ??  beginning or end of the document that's visible in the TimelinePane.
    	//  ??  But it seems like this function is needlessly obtuse.
-		public void ensureIncludedInMappedTimePeriod(TimePeriod tr){
+	public void ensureIncludedInMappedTimePeriod(TimePeriod tr){
 		TimePeriod docRange = iDoc.getDocTimePeriod();
 		TimePeriod newMapRange;
 		if (docRange == null)
@@ -124,6 +135,15 @@ public class TimePositionMapping extends Object {
 			newMapRange = docRange.cover(tr);
 		if (!newMapRange.equals(iMappedPeriod)){
 			iMappedPeriod = newMapRange;
+			////////////////////////////////////
+			CustomGregorianCalendar cal = new CustomGregorianCalendar();
+			cal.setTimeInMillis(iMappedPeriod.getPeriodStart());
+			System.err.println("Document extended start: " + cal.toZonedDateTime().toString());////////////////////
+			cal.clear();
+			cal.setTimeInMillis(iMappedPeriod.getPeriodEnd());
+			System.err.println("Document extended end: " + cal.toZonedDateTime().toString());////////////////////
+			/////////////////////////////////
+
 			computeTimePositionMapping();
 		}
 	}
@@ -131,7 +151,7 @@ public class TimePositionMapping extends Object {
 	
 	//	This calculates iMilliToPixelRatio, which is part of the time/position mapping.
 	//  ??  This could be pre-computed.
-	protected void computeMilliToPixel(){
+	protected void  computeMilliToPixel(){
 		//	Determine the typical number of milliseconds occupied by one scale unit.
 	
 		//	Note that some instances of this scale unit may
@@ -146,7 +166,7 @@ public class TimePositionMapping extends Object {
 	
 	
 	//	This must be called when any value that the mapping depends upon is changed.  At present,
-	//	these are the TPM time range and the scale.
+	//	these are the TPM time range, the scale and cyclic mode.
 	protected void computeTimePositionMapping(){
 	
 		//	A mapped period must be determined before this method can function.
@@ -169,11 +189,13 @@ public class TimePositionMapping extends Object {
 			cal.setTimeInMillis(iMappedPeriod.getPeriodStart());
 			cal.truncateToLower(Calendar.YEAR);
 			int startingYear = cal.get(Calendar.YEAR);
+			System.err.println("iMappedPeriod start: " + cal.toZonedDateTime().toString());////////////////////
 
 			cal.clear();
 			cal.setTimeInMillis(iMappedPeriod.getPeriodEnd());
 			cal.truncateToLower(Calendar.YEAR);
 			cal.roll(Calendar.YEAR, true);
+			System.err.println("iMappedPeriod end: " + cal.toZonedDateTime().toString());////////////////////
 			int endingYear = cal.get(Calendar.YEAR);
 			
 			//	Find the nearest year at or before the starting year of the mapped period
@@ -194,12 +216,13 @@ public class TimePositionMapping extends Object {
 				iCyclicYearStarts[i] = cal.getTimeInMillis();
 				cal.roll(Calendar.YEAR, true);
 			}
-                      
-            //  The origin of the window is one day before the first moment in the year specified by the user.
+			
+			//  The origin of the window is one day before the first moment in the year specified by the user.
 			//  ??  The year is hardwired for testing.
-           cal.clear();
-           cal.set(2022, 10, 28);   ///////////////////////////
-           iOriginMillis = cal.getTimeInMillis();
+			cal.clear();
+			cal.set(2022, 10, 28);   ///////////////////////////
+			System.err.println("Origin date: " + cal.toZonedDateTime().toString());
+			iOriginMillis = cal.getTimeInMillis();
 		}
 		else {
 			//	Compute the origin moment, as expressed in millis, as the lower bound of the

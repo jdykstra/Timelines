@@ -105,12 +105,16 @@ class GridPane extends JComponent implements ChangeListener {
 	        Rectangle clipRect = g.getClipBounds();
 	 	CustomGregorianCalendar startOfGrid = new CustomGregorianCalendar();
 	 	startOfGrid.setTimeInMillis(iTPM.xPositionToTime(clipRect.x));
-
+		
 	 	//	End drawing the grid just past the end of the clip rectangle.
 	 	CustomGregorianCalendar endOfGrid = new CustomGregorianCalendar();
 	 	endOfGrid.setTimeInMillis(iTPM.xPositionToTime(clipRect.x + clipRect.width));
 
-	 	//	Draw the minor divisions of the grid.
+		 System.err.println("clipRect: " + clipRect.toString());////////////////////
+		 System.err.println("startOfGrid: " + startOfGrid.toZonedDateTime().toString());////////////////////
+		 System.err.println("endOfGrid: " + endOfGrid.toZonedDateTime().toString());////////////////////
+
+		//	Draw the minor divisions of the grid.
 	 	int scale = iTPM.getScale();
 	 	this.drawMinorGridDivisions(g, scale, startOfGrid, endOfGrid);
 
@@ -229,6 +233,7 @@ class GridPane extends JComponent implements ChangeListener {
 
 	 		//	Compute where the line is and draw it.
 	 		int x = iTPM.timeToXPosition(curMoment.getTimeInMillis());
+			 System.err.println("x: " + x);
 	 		g.drawLine(x, 0, x, height);
 
 	 		//	If we're doing header, draw appropriate legend.
