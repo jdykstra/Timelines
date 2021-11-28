@@ -112,7 +112,7 @@ class GridPane extends JComponent implements ChangeListener {
 
 		Debug.log(Debug.DETAIL, "clipRect: " + clipRect.toString());
 		Debug.log(Debug.DETAIL, "startOfGrid: " + startOfGrid.toZonedDateTime().toString());
-		Debug.log(Debug.DETAIL, "endOfGrid: " + endOfGrid.toZonedDateTime().toString());////////////////////
+		Debug.log(Debug.DETAIL, "endOfGrid: " + endOfGrid.toZonedDateTime().toString());
 
 		//	Draw the minor divisions of the grid.
 	 	int scale = iTPM.getScale();
