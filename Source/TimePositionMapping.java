@@ -62,6 +62,7 @@ public class TimePositionMapping extends Object {
 												//  but can be extended at either end if the user scrolls
 												//  past an end of the document.  See ensureIncludedInMappedTimePeriod()
 	protected boolean iCyclicView;				//	Use cyclic form for view
+	protected int iCyclicYear;					//  Year for cyclic view, iff iCyclicView is true
 	protected long[] iCyclicYearStarts;			//	Start of each year enclosing mapped period, in millis
 
 	//	These two variables define the mapping from time (milliseconds) to horizontal position.
@@ -81,11 +82,12 @@ public class TimePositionMapping extends Object {
 
 
 	//	Constructor.
-	public TimePositionMapping(TLDocument itsDoc, TLWindow itsWindow, int scale, boolean cyclic){
+	public TimePositionMapping(TLDocument itsDoc, TLWindow itsWindow, int scale, boolean cyclic, int cyclicYear){
 		iDoc = itsDoc;
 		iWindow = itsWindow;
 		iScale = scale;
 		iCyclicView = cyclic;
+		iCyclicYear = cyclicYear;
 		
 		//	Initialize our period to be that covered by the document.  Note that this may be
 		//	null if the document is empty.  
@@ -179,20 +181,28 @@ public class TimePositionMapping extends Object {
 			//	The first entry in the array is the start of the nearest leap year before the start of the 
 			//	mapped period;  the last entry in the array is the start of the year _after_ the
 			//	end of the mapped period.
-			TimePeriod docRange = iDoc.getDocTimePeriod();
 			CustomGregorianCalendar cal = new CustomGregorianCalendar();
 			
 			//	Find the years in which the mapped period starts and ends.
-			cal.setTimeInMillis(docRange.getPeriodStart());
+			TimePeriod docRange = iDoc.getDocTimePeriod();
+			if (docRange!= null)
+				cal.setTimeInMillis(docRange.getPeriodStart());
+			else
+				cal.set(iCyclicYear, 0, 1);
+
 			cal.truncateToLower(Calendar.YEAR);
 			int startingYear = cal.get(Calendar.YEAR);
-			Debug.log(Debug.DETAIL, "docRange start: " + cal.toZonedDateTime().toString());
+			Debug.log(Debug.DETAIL, "Document range start: " + cal.toZonedDateTime().toString());
 
 			cal.clear();
-			cal.setTimeInMillis(docRange.getPeriodEnd());
+			if (docRange!= null)
+				cal.setTimeInMillis(docRange.getPeriodEnd());
+			else
+				cal.set(iCyclicYear, 0, 1);
+
 			cal.truncateToLower(Calendar.YEAR);
 			cal.roll(Calendar.YEAR, true);
-			Debug.log(Debug.DETAIL, "docRange end: " + cal.toZonedDateTime().toString());
+			Debug.log(Debug.DETAIL, "Document range end: " + cal.toZonedDateTime().toString());
 			int endingYear = cal.get(Calendar.YEAR);
 			
 			//	Find the nearest year at or before the starting year of the mapped period
@@ -215,9 +225,8 @@ public class TimePositionMapping extends Object {
 			}
 			
 			//  The origin of the window is one day before the first moment in the year specified by the user.
-			//  ??  The year is hardwired for testing.
 			cal.clear();
-			cal.set(2022, 0, 1);   ///////////////////////////
+			cal.set(iCyclicYear, 0, 1);
 			Debug.log(Debug.DETAIL, "Origin date: " + cal.toZonedDateTime().toString());
 			iOriginMillis = cal.getTimeInMillis();
 			iMappedPeriod = new ConcreteTimePeriod(cal.getTimeInMillis(), 

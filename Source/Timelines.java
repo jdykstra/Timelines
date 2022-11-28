@@ -31,7 +31,7 @@ public class Timelines extends Application {
 
 	//	Constants.
 	protected static final String APPLICATION_NAME = "Timelines";
-	protected static final String APPLICATION_VERSION = "1.4beta";
+	protected static final String APPLICATION_VERSION = "1.5";
 	protected static final String[] FILE_EXTENSIONS = {"MTL", "TML"};
 	protected static final FileFilter MAC_FILE_FILTER =
 							new TLFileFilter(FILE_EXTENSIONS ,"Timeline files (*.mtl, *.tml)");

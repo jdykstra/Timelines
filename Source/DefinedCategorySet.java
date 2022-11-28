@@ -1,5 +1,10 @@
 //	DefinedCategorySet.java - Represent the set of all categories defined in a document.
 
+//  Each TLEvent keeps track of the categories it is part of with a reference to a MemberSet.
+//	These are relatively heavyweight, and typically a number of TLEvent's are part of the 
+//  same categories, so the MemberSet's are shared between TLEvents.  DefinedCategorySet
+//  also manages this sharing.
+
 ////////////////////////	??	Need to decide how to maintain iIndexedCategories.
 
 import java.io.*;
@@ -42,7 +47,7 @@ public class DefinedCategorySet extends HashSet implements Serializable {
 		iIndexedCategories = new ArrayList();
 		
 		//	Read byte stream version number.
-		Debug.assertOnError(is.readShort() == 1);  //	Verify version
+		Debug.assertOnError(is.readShort() == PORTABLE_STREAM_VERSION);  //	Verify version
 		int categoryCount = is.readInt();
 		
 		//	The Mac version of Timelines had the concept of a "default category" that contained
@@ -105,7 +110,7 @@ public class DefinedCategorySet extends HashSet implements Serializable {
 	public void writeTo(DataOutputStream os) 
 							throws IOException {
 							
-		//	Create the iIndexedCategories List as we write out the Categories.
+		//	Create a new iIndexedCategories List before we write out the Categories.
 		iIndexedCategories = new ArrayList();
 		
 		os.writeShort(PORTABLE_STREAM_VERSION);

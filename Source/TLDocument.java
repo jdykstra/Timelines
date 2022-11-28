@@ -38,6 +38,12 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 	protected static final String TEMPORARY_FILE_PREFIX = "TIMELINE_";
 	protected static final int SAVE_BUFFER_SIZE = 10000;
 
+	//	Default values used for new documents.
+	protected static final Point DEFAULT_WINDOW_POSITION = new Point(50, 50);
+	protected static final Dimension DEFAULT_WINDOW_SIZE = new Dimension(800, 500);
+	protected static final int DEFAULT_WINDOW_SCALE = TimeUnit.WEEK;
+
+
 	
 	//	Error messages.
 	protected static final String CONTENT_LOCK_ERROR = "the document's content is locked";
@@ -138,7 +144,7 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 			}
 		}
 		
-		//	Finally, try reading the file as a saved object stream.
+		//	Finally, try reading the file as a MacInputStream.
 		if (!successfulRead){
 			try {
 				doc = new TLDocument();
@@ -192,7 +198,14 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 		doc.iDefinedCategories = new DefinedCategorySet();
 		
 		//	Set up the default window information.
-		doc.iSavedWindowState = new WindowState(doc.iDefinedCategories);
+		WindowState ws = new WindowState();
+		ws.iWinPosition = DEFAULT_WINDOW_POSITION;
+		ws.iWinSize = DEFAULT_WINDOW_SIZE;
+		ws.iResolution = DEFAULT_WINDOW_SCALE;
+		ws.iScrollPosition = new Date().getTime();
+		ws.iShownCats = doc.iDefinedCategories.getSharedMemberSet();
+		ws.iCyclicView = false;
+		doc.iSavedWindowState = ws;
 		
 		//	Initialize transient fields, including those dependent upon the above initializations.
 		doc.initializeTransientFields(null);
@@ -230,7 +243,7 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 				iDefinedCategories = new DefinedCategorySet(is);
 				
 				//	Read the saved window state
-				iSavedWindowState = new WindowState(iDefinedCategories);
+				iSavedWindowState = new WindowState();
 							
 				//	Read the window's initial position and size.  Unfortunately, the fields in MacApp's
 				//	Point object are in the opposite order of Java's Point.
@@ -298,7 +311,7 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 				break;
 				
 			default:
-				throw new FileFormatError("Unsupported file version (" + version + ")");
+				throw new FileFormatError("Unsupported Mac Input Stream TLDocument file version (" + version + ")");
 		}
 	}
 	
@@ -357,7 +370,7 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 				break;
 				
 			default:
-				throw new FileFormatError("Unsupported file version (" + version + ")");
+				throw new FileFormatError("Unsupported input stream TLDocument file version (" + version + ")");
 		}
 	}
 	

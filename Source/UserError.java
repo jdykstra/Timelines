@@ -1,4 +1,4 @@
-//	UserError.java - Abstract base class for exceptions which report user errors.
+//	UserError.java - Represent exceptions which report user errors.
 
 import javax.swing.*;
 

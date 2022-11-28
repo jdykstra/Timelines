@@ -1,5 +1,4 @@
 //	TLWindow.java - A window that displays a timeline, along with its toolbar.
-
 //	Object Hierarchy
 //	------------
 //	TLWindow is one part of the "object hierarchy" around which both the user interface and the internal
@@ -16,13 +15,19 @@
 //	The implementation of the closeXXX() method calls the close() method of the object to be closed, which is where
 //	most of the work of closing the object occurs.  Finally, the closeXXX() method removes the closed object from
 //	its list of objects.
+//
+//  WindowState is used to hold all of the user-visible state info for a window (scrolling position, etc.).  
+//  However, it is not an attribute of a TLWindow.  Instead, it is passed in when a window is created and
+//	created anew when a window is being saved.  This is a bit counter-intuitive, but perhaps justified in that
+//  much of the state is actually held by the window's Swing components and TimePositionMapping,
+//	and we don't want to have to update a WindowState object every time one of them changes.
 
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.chrono.ThaiBuddhistChronology;
 import java.util.*;
-import java.util.List;
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -56,15 +61,14 @@ class TLWindow extends JFrame  implements ChangeListener {
 	protected TimePositionMapping iTPM;				//	Time/Position mapping for data panes
 	protected ActionManager iAM = new ActionManager();	//  ActionManager handling enables for this object
 	protected JScrollPane iScrollPane;				//	The scroll pane
-	protected JScrollBar iHScrollbar;					//	The horizontal scrollbar of the scroll pane
+	protected JScrollBar iHScrollbar;				//	The horizontal scrollbar of the scroll pane
 	protected JMenu iCategoryMenu;					//	The category menu
 	protected TimelinePane iTLPane;					//	Pane displaying data
 	protected DragPane iDragPane;					//	Pane used for dragging (and other commands)
-	protected boolean iCyclicView;					//	Use cyclic form for view
 	protected Set iShownCategories;					//	Categories currently shown
 	protected Set iCategoryMenuItems;				//	All category menu items
 	protected ButtonGroup iToolButtonGroup;			//	The button group for tools
-	protected JToggleButton iSelectTool;				//	The select tool button
+	protected JToggleButton iSelectTool;			//	The select tool button
 	protected int iCurrentCursorTool=INITIAL_CURSOR_TOOL;		//	SELECT_TOOL or CREATE_TOOL
 	
 	//	Trivial accessors -------------------------------------------------------------
@@ -95,8 +99,8 @@ class TLWindow extends JFrame  implements ChangeListener {
 		
 		//	The TimePositionMapping object sets the time scale for both the timeline and the
 		//	header pane.
-		iCyclicView = initialState.iCyclicView;
-		iTPM = new TimePositionMapping(iDoc, this, initialState.iResolution, iCyclicView);
+		iTPM = new TimePositionMapping(iDoc, this, initialState.iResolution, initialState.iCyclicView,
+							initialState.iCyclicYear);
 		
 		//	Initialize the shown categories to be those in the saved window state.
 		iShownCategories = new HashSet(initialState.iShownCats.getAsSet());
@@ -353,8 +357,7 @@ class TLWindow extends JFrame  implements ChangeListener {
 		mi = viewMenu.add(iGotoAction);
 		mi.setAccelerator(KeyStroke.getKeyStroke('J', java.awt.Event.CTRL_MASK));
 
-		mi = viewMenu.add(new JCheckBoxMenuItem("Cyclic", iCyclicView));
-		mi.addActionListener(iCyclicAction);
+		mi = viewMenu.add(iCyclicAction);
 		
 		return mb;
 	}
@@ -490,7 +493,7 @@ class TLWindow extends JFrame  implements ChangeListener {
 	
 	//	Return a WindowState object describing the current state of the window.
 	public WindowState getWindowState(){
-		WindowState ws = new WindowState(iDoc.getDefinedCategories());
+		WindowState ws = new WindowState();
 		
 		ws.iWinPosition = getLocation();
 		ws.iWinSize = getSize();
@@ -498,8 +501,8 @@ class TLWindow extends JFrame  implements ChangeListener {
 		ws.iScrollPosition = iTPM.xPositionToTime(getHScrollPosition() + 
 						getHScrollWidth() / 2 );
 		ws.iShownCats = iDoc.getDefinedCategories().getSharedMemberSet(iShownCategories);
-		ws.iCyclicView = iCyclicView;
-		
+		ws.iCyclicView = iTPM.iCyclicView;
+		ws.iCyclicYear = iTPM.iCyclicYear;
 		return ws;
 	}
 	
@@ -852,21 +855,26 @@ class TLWindow extends JFrame  implements ChangeListener {
 	};
 
 
-	protected TLAction iCyclicAction = new TLAction(this){
+	protected TLAction iCyclicAction = new TLAction("Cyclic...", this){
 	
-		//	??	This method has no effect on the menu item, because the menu item is a checkbox
-		//	??	created manually, not an Action added directly to the menu.  This could probably
-		//	??	be fixed by creating a linkage object which listened for property changes on the
-		//	??	TLAction, and changed the enable of the menu item appropriately.  See CustomToolBar
-		//	??	for an example of how this is done.
 		public void updateEnable(){
 			setEnabled(!iDoc.isContentLocked());
 		}
 
-		public void actionPerformed(ActionEvent e){
-			iCyclicView = ((JCheckBoxMenuItem)e.getSource()).isSelected();
-			iTPM.setCyclicView(iCyclicView);
+		public void actionPerformed(ActionEvent e) {
+			try {
+				super.actionPerformed(e);
+	
+				CyclicDialog.doDialog(iDoc, TLWindow.this);
+				iTPM.computeTimePositionMapping();
+				iTPM.ensureIncludedInMappedTimePeriod(iTPM.iMappedPeriod);
+				TLWindow.this.repaint();
+			}
+			catch (Throwable ex){
+				Application.processExceptionInAction(ex);
+			}
 		}
+
 	};
 
 
