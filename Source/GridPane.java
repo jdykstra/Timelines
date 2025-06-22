@@ -239,14 +239,35 @@ class GridPane extends JComponent implements ChangeListener {
 	 		//	If we're doing header, draw appropriate legend.
 		        if (iIsHeaderPane){
 					SimpleDateFormat format = null;
+					String legendString = null;
 					switch (nextLargerUnit){
 						case TimeUnit.YEAR:
 							format = yearFormat;
 							break;
 		
 						case TimeUnit.MONTH:
-						case TimeUnit.WEEK:
 							format = monthYearFormat;
+							break;
+						
+						case TimeUnit.WEEK:
+							// Handle weeks that span two months
+							CustomGregorianCalendar weekStart = new CustomGregorianCalendar(curMoment);
+							CustomGregorianCalendar weekEnd = new CustomGregorianCalendar(curMoment);
+							weekEnd.add(Calendar.DAY_OF_MONTH, 6); // Add 6 days to get end of week
+							
+							int startMonth = weekStart.get(Calendar.MONTH);
+							int endMonth = weekEnd.get(Calendar.MONTH);
+							
+							if (startMonth == endMonth) {
+								// Week is within one month
+								legendString = monthYearFormat.format(curMoment.getTime());
+							} else {
+								// Week spans two months
+								String startMonthName = MONTH_NAMES[startMonth];
+								String endMonthName = MONTH_NAMES[endMonth];
+								int year = weekStart.get(Calendar.YEAR);
+								legendString = startMonthName + "/" + endMonthName + ", " + year;
+							}
 							break;
 												
 						case TimeUnit.DAY:
@@ -261,8 +282,10 @@ class GridPane extends JComponent implements ChangeListener {
 							break;
 			 	}
 			 	if (format != null){
+				 	legendString = format.format(curMoment.getTime());
+				 }
+			 	if (legendString != null){
 				 	g.setColor(Color.black);
-				 	String legendString = format.format(curMoment.getTime());
 				 	g.drawString(legendString, x + MAJOR_LEGEND_SPACING, MAJOR_LEGEND_Y_POSTION);
 				 }
 	 		}
