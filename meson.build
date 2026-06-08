@@ -7,6 +7,7 @@ build_script = meson.current_source_dir() / 'build_jar.sh'
 
 custom_target(
   'timelines-jar',
+  build_always_stale: true,
   output: 'Timelines.jar',
   command: [
     'sh',

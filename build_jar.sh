@@ -20,7 +20,5 @@ jar cfm "$BUILDDIR/$OUTPUT_JAR" "$BUILDDIR/manifest.mf" \
   -C "$BUILDDIR/classes" . \
   -C "$SRCDIR" Icons
 
-cp "$BUILDDIR/$OUTPUT_JAR" "$SRCDIR/../$OUTPUT_JAR"
-
 rm -f "$BUILDDIR/manifest.mf"
 rm -rf "$BUILDDIR/classes"

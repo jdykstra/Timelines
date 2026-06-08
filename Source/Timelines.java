@@ -16,6 +16,8 @@
 
 
 import java.awt.*;
+import java.awt.desktop.AboutEvent;
+import java.awt.desktop.AboutHandler;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -51,9 +53,30 @@ public class Timelines extends Application {
 		// Set system properties so that we use the MacOS menu bar.  This does no harm on other platforms.
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", APPLICATION_NAME);
+		installAboutHandler();
 
 		gApp = new Timelines();
 		gApp.run(args);
+	}
+
+
+	private static void installAboutHandler(){
+		if (!Desktop.isDesktopSupported())
+			return;
+
+		Desktop desktop = Desktop.getDesktop();
+		if (!desktop.isSupported(Desktop.Action.APP_ABOUT))
+			return;
+
+		desktop.setAboutHandler(new AboutHandler() {
+			public void handleAbout(AboutEvent event) {
+				JOptionPane.showMessageDialog(null,
+					APPLICATION_NAME + " version " + APPLICATION_VERSION + "\n\n" +
+					"Java runtime: " + System.getProperty("java.version"),
+					"About " + APPLICATION_NAME,
+					JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
 	}
 
 
