@@ -171,15 +171,29 @@ public class Timelines extends Application {
 
 		public void run(){
 
-			//	Display the file selection dialog.
-			JFileChooser fc = new JFileChooser();
-			fc.addChoosableFileFilter(MAC_FILE_FILTER);
-			boolean userChoseOK = fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION;
+			//	Display the file selection dialog on the EDT, since Swing dialogs must run
+			//	here.  The actual file loading still happens in this background thread.
+			final JFileChooser[] chooserRef = new JFileChooser[1];
+			final boolean[] userChoseOK = new boolean[1];
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						JFileChooser fc = new JFileChooser();
+						fc.addChoosableFileFilter(MAC_FILE_FILTER);
+						chooserRef[0] = fc;
+						userChoseOK[0] = fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION;
+					}
+				});
+			}
+			catch (Exception e) {
+				reportUnexpectedException(e);
+				return;
+			}
 
 			//	If the user chose one, open it as a new document.
-			if (userChoseOK){
+			if (userChoseOK[0]){
 				try {
-					File file = fc.getSelectedFile();
+					File file = chooserRef[0].getSelectedFile();
 					openExistingFile(file);
 				}
 				catch (Exception e1){

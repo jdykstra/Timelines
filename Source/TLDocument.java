@@ -107,8 +107,20 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 		long startTotalMemory = Runtime.getRuntime().totalMemory();
 		long startUsedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 		
-		//	Create the progress window.
-		ProgressWindow pw = new ProgressWindow("Opening " + file.toString() + "...", 100 );
+		//	Create the progress window on the EDT, because Swing dialogs must be created
+		//	there.  The actual file parsing still happens on the worker thread.
+		final ProgressWindow[] progressWindowRef = new ProgressWindow[1];
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					progressWindowRef[0] = new ProgressWindow("Opening " + file.toString() + "...", 100);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new ImplementationException("Unexpected exception while creating the progress window:  " + e.toString());
+		}
+		final ProgressWindow pw = progressWindowRef[0];
 		
 		//	First try reading the file as a portable byte stream.
 		TLDocument doc = null;
@@ -166,7 +178,19 @@ public class TLDocument extends CustomAbstractDocument implements Serializable {
 		}
 		
 		//	Initialize the instance variables that are not saved in the file.
-		doc.initializeTransientFields(file);
+		//	This creates the Swing window, so it must run on the EDT.
+		final TLDocument[] docRef = new TLDocument[1];
+		docRef[0] = doc;
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					docRef[0].initializeTransientFields(file);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new ImplementationException("Unexpected exception while initializing the new document window:  " + e.toString());
+		}
 		
 		//	Close the progress window.
 		pw.remove();

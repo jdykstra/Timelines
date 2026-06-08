@@ -52,23 +52,49 @@ public class ProgressWindow extends JDialog {
 	}
 	
 	
-	public void updateValue(int value){
+	public void updateValue(final int value){
+		if (SwingUtilities.isEventDispatchThread()) {
+			updateValueOnEDT(value);
+		}
+		else {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					updateValueOnEDT(value);
+				}
+			});
+		}
+	}
+
+	private void updateValueOnEDT(int value){
 		if (value != iProgressBar.getValue()){
 			iProgressBar.setValue(value);
 			
 			//	The thread that we're reporting the progress of is probably tying up
-			//	the CPU pretty well, so AWT's repaint thread doesn't execute very
-			//	often.  Therefore, repaint this component immediately. 
+			//		the CPU pretty well, so AWT's repaint thread doesn't execute very
+			//		often.  Therefore, repaint this component immediately. 
 			Rectangle r = this.getBounds();
-			 r.x = 0;
-			 r.y = 0;
+			r.x = 0;
+			r.y = 0;
 			iProgressBar.paintImmediately(r);
 		}
 	}
 	
 	public void remove(){
+		if (SwingUtilities.isEventDispatchThread()) {
+			removeOnEDT();
+		}
+		else {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					removeOnEDT();
+				}
+			});
+		}
+	}
+
+	private void removeOnEDT(){
 		this.hide();
-	       	this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
 }
